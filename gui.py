@@ -12,7 +12,10 @@ from tkinter import (
 
 from PIL import Image, ImageTk
 
-from _global import ASSETS_PATH
+from exception import FileTypeException
+from prediction import predict_tumor
+from preprocess import is_jpg, preprocess
+from _global import *
 from _config import Window
 
 def canvas_mapped(e):
@@ -20,19 +23,44 @@ def canvas_mapped(e):
     root.overrideredirect(True)
     root.state('normal')
 
-def detect():
-    try:
-        result_resized_img = input_img.resize((284,284))
-        result_img_tk = ImageTk.PhotoImage(result_resized_img) 
+def display_image(input_img):
+    #========== Update UI ==========#
+    input_img = input_img.resize((284,284))
+    img_tk = ImageTk.PhotoImage(input_img) 
+    show_img=Label(canvas,image = img_tk,bd=0)
+    show_img.image = img_tk
+    show_img.place(x=68,y=101)
+    #========== Update UI ==========#
+
+def detect_tumor():
+    try:        
+        img_is_jpg = is_jpg(input_img_path)
         
-        show_img=Label(canvas,image = result_img_tk,bd=0)
-        show_img.image = result_img_tk
-        show_img.place(x=68,y=101)
-        canvas.itemconfig(pred_result, text="text has changed!")
-        print("Detect clicked")
+        if img_is_jpg:
+            img_to_pred = preprocess(input_img_path)
+            
+            result = predict_tumor(img_to_pred)
+
+            if result[0] == [0]:
+                canvas.itemconfig(pred_result, text="Tumor Not Detected")
+            if result[0] == [1]:
+                canvas.itemconfig(pred_result, text="Tumor Detected")
+
+            
+            display_image(input_img)           
+            # canvas.itemconfig(pred_result, text="text has changed!")
+            print("Detect clicked")
+
+        else:
+            raise FileTypeException
+    
+    except FileTypeException as fe:
+        print("Error: File type unknown")
+        mb.showerror("Unknown file type","Error: File Type Unknown, select jpg image")
 
     except Exception as e:
-        print("\nSelect the MRI image first")
+        # print("\nSelect the MRI image first")
+        print(e)
         mb.showinfo("No image selected","Please select the MRI image first")
 
 def get_image(e):
@@ -40,19 +68,27 @@ def get_image(e):
     global input_img
     try:
         input_img_path = filedialog.askopenfilename()
-        path_entry.delete(0, 'end')
-        path_entry.insert(0, input_img_path)
-        
-        input_img = Image.open(input_img_path)
-        resized_input_img = input_img.resize((208,208))
+        img_is_jpg = is_jpg(input_img_path)
+        if img_is_jpg:
+            path_entry.delete(0, END)
+            path_entry.insert(0, input_img_path)
+            
+            input_img = Image.open(input_img_path)
+            resized_input_img = input_img.resize((208,208))
 
-        input_image_tk = ImageTk.PhotoImage(resized_input_img) 
-        
-        show_img=Label(canvas,image = input_image_tk,bd=0)
-        show_img.image = input_image_tk
-        show_img.place(x=463,y=136)
+            input_image_tk = ImageTk.PhotoImage(resized_input_img) 
+            
+            show_img=Label(canvas,image = input_image_tk,bd=0)
+            show_img.image = input_image_tk
+            show_img.place(x=463,y=136)
+        else:
+            raise FileTypeException
 
-    except AttributeError as e:
+    except FileTypeException:
+        print("Error: File type unknown")
+        mb.showerror("Unknown file type","Error: File Type Unknown, select jpg image")
+
+    except AttributeError:
         print("Please select the file")
         mb.showerror("No file selected","No file was selected")
 
@@ -205,7 +241,7 @@ path_entry = Entry(
     bg = "#ffffff",
     highlightthickness = 0,
     font=("OpenSansRoman-Regular",int(10)))
-path_entry.insert(0,'Choose file...')
+path_entry.insert(0,'Choose file (only jpg)...')
 path_entry.place(
     x=467.0,
     y=364.91,
@@ -242,7 +278,7 @@ detect_btn = Button(
     image=detect_btn_img,
     borderwidth=0,
     highlightthickness=0,
-    command = detect,
+    command = detect_tumor,
     relief="flat",
     cursor="hand2"
 )
