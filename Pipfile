@@ -8,6 +8,7 @@ numpy = "*"
 pillow = "*"
 keras = "*"
 tensorflow = "*"
+opencv-python = "*"
 
 [dev-packages]
 
