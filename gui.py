@@ -6,15 +6,17 @@ from tkinter import (
     Label,
     Button,
     PhotoImage,
+    Toplevel,
     filedialog,
     messagebox as mb
 )
-
+import numpy as np
 from PIL import Image, ImageTk
 
 from exception import FileTypeException
-from prediction import predict_tumor
-from preprocess import is_jpg, preprocess
+# from prediction import predict_tumor
+# from preprocess import is_jpg, preprocess
+from preprocess import is_jpg
 from _global import *
 from _config import Window
 
@@ -29,30 +31,31 @@ def display_image(input_img):
     img_tk = ImageTk.PhotoImage(input_img) 
     show_img=Label(canvas,image = img_tk,bd=0)
     show_img.image = img_tk
-    show_img.place(x=68,y=101)
+    show_img.place(x=70,y=101)
     #========== Update UI ==========#
 
 def detect_tumor():
     try:        
-        img_is_jpg = is_jpg(input_img_path)
+        # img_is_jpg = is_jpg(input_img_path)
         
-        if img_is_jpg:
-            img_to_pred = preprocess(input_img_path)
+        # if img_is_jpg:
+        #     img_to_pred = preprocess(input_img_path)
             
-            result = predict_tumor(img_to_pred)
+        #     result = predict_tumor(img_to_pred)
+        #     result = result.flatten()
+        #     result = round(result[0],4)
 
-            if result[0] == [0]:
-                canvas.itemconfig(pred_result, text="Tumor Not Detected")
-            if result[0] == [1]:
-                canvas.itemconfig(pred_result, text="Tumor Detected")
-
+        #     if result > 0.5:
+        #         canvas.itemconfig(pred_result, text="Tumor detected ")
+        #         canvas.itemconfig(pred_result_summary, text="Tumor was detected in the MRI image with with "+str((result*100))+"% confidence")
+        #     elif result < 0.5:
+        #         canvas.itemconfig(pred_result, text="Tumor not detected with "+str(((100-result*100)))+"% confidence")
             
-            display_image(input_img)           
-            # canvas.itemconfig(pred_result, text="text has changed!")
-            print("Detect clicked")
+        #     display_image(input_img)           
 
-        else:
-            raise FileTypeException
+        print("hey")
+        # else:
+        #     raise FileTypeException
     
     except FileTypeException as fe:
         print("Error: File type unknown")
@@ -100,6 +103,7 @@ def get_pos(e):
     ywin = e.y
 
 def minimize():
+    root.state('withdraw')
     root.update_idletasks()
     root.overrideredirect(False)
     root.state('iconic') 
@@ -111,23 +115,20 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 #====================================== UI ======================================#
-
 root = Tk()
-
 #===================Canvas===================#
 global canvas
 canvas = Canvas(
     root,
-    bg = "#000000",
+    # bg = "#000000",
     height = 531,
     width = 750,
     bd = 0,
     highlightthickness = 0,
-    relief = "ridge"
+    relief = "ridge",
 )
 canvas.bind("<Map>", canvas_mapped)
-canvas.place(x = 0, y = 0)
-
+canvas.place(x = 0, y = 0) 
 canvas_background_img = PhotoImage(file = relative_to_assets("background.png"))
 canvas_background = canvas.create_image(375, 265,image=canvas_background_img)
 
@@ -141,12 +142,12 @@ canvas.create_text(
     anchor="nw",
     text="Brain Tumor Detection",
     fill="#FFFFFF",
-    font=("OpenSansRoman-Regular",int(12.62))
+    font=("OpenSansRoman-Regular",10)
 )
 #===============Title===============#
 
 #===============Drag Button===============#
-drag_button = PhotoImage(file=relative_to_assets("button_d.png"))
+drag_button = PhotoImage(file= relative_to_assets("button_d.png"))
 button_5 = Button(
     image=drag_button,
     borderwidth=0,
@@ -217,7 +218,7 @@ canvas.create_text(
     anchor="nw",
     text="Image Upload",
     fill="#FFFFFF",
-    font=("OpenSansRoman-Regular",int(16.622))
+    font=("OpenSansRoman-Regular",int(16.62))
 ) 
 
 #Input Image 
@@ -231,11 +232,12 @@ dummy_input_img_show = canvas.create_image(
 #===============Get Image Path===============#
 
 path_entry_img = PhotoImage(file=relative_to_assets("entry_1.png"))
-path_entry_bg = canvas.create_image(
+canvas.create_image(
     567.0,
     378.91,
     image=path_entry_img)
 
+global path_entry
 path_entry = Entry(
     bd = 0,
     bg = "#ffffff",
@@ -271,7 +273,7 @@ browse_btn.place(
 browse_btn.bind("<1>", get_image)
 #===============Browse Button===============#
 
- 
+
 #===============Detect Button===============#
 detect_btn_img = PhotoImage(file=relative_to_assets("button_2d.png"))
 detect_btn = Button(
@@ -292,19 +294,29 @@ detect_btn.place(
 
 #====================Input Block====================#
 
-
 #===============Result Block===============#
-
+global pred_result
 pred_result = canvas.create_text(
-70.0,
-418.91,
-anchor="nw",
-text="Result Summary",
-fill="#FFFFFF",
-font=("OpenSansRoman-Regular",int(16.62)))
+    70.0,
+    400.0,
+    width=290,
+    anchor="nw", 
+    fill="#FFFFFF",
+    font=("OpenSansRoman-Regular",int(16.62))
+)
+global pred_result_summary
+pred_result_summary = canvas.create_text(
+    70.0,
+    435.91,
+    width=290,
+    anchor="nw", 
+    fill="#FFFFFF",
+    font=("OpenSansRoman-Regular",10)
+)
 #===============Result Block===============#
 
 #====================================== UI ======================================#
 
-win = Window(root)
-root.mainloop()
+if __name__ == '__main__':
+    win = Window(root)
+    root.mainloop()
