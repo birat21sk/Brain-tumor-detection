@@ -9,6 +9,7 @@ pillow = "*"
 keras = "*"
 tensorflow = "*"
 opencv-python = "*"
+pystray = "*"
 
 [dev-packages]
 

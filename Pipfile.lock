@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b68105b3e227dc201da794a14498eae41ed3e5c27e79b4dc5d3b95569afe0761"
+            "sha256": "97e6f0eba53b413ccad7de6293ee65ef8c103f4aebc746bf7963e4b9e33279ef"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -197,13 +197,14 @@
         },
         "libclang": {
             "hashes": [
-                "sha256:327ea0ccdca052233d192ffd6a15a92eaa08a97c245cedd2e0862c838803c8fe",
-                "sha256:46414009fcee8375ba64ea6c2c43c5b80a63e3a8b679f4293e00aa605b7265aa",
-                "sha256:685d415c03cd666c01997986a3fd75f2669c4680fb64de0d64f3059ff9a826e2",
-                "sha256:cea55e97ae7b0b49ca8ea843e1c7dc9ff15a5484dae7b7fdf4b204e1470f2253",
-                "sha256:fdd1cb8d215469589dfffcbda1bc66d3b5edb0f661ffe1be2c73309d98a33d87"
+                "sha256:069407eac2e20ea8f18212d28c6598db31014e7b8a77febc92e762ec133c3226",
+                "sha256:9c1e623340ccafe3a10a2abbc90f59593ff29f0c854f4ddb65b6220d9d998fb4",
+                "sha256:b61dedc1b941f43acca1fa15df0a6669c6c3983197c6f3226ae03a766281dd37",
+                "sha256:b7de34393ed46c6cf7b22178d0d43cec2f2dab2f5f95450520a47fc1cf2df5ac",
+                "sha256:bcaffec6b1ab9486811670db7af29d4a361830d6cb75da4f5672e884aa973bda",
+                "sha256:dcc7ecd83d91e23e95315d7aa6355ee8d45b43742ca1fb642583e0b2f935d50e"
             ],
-            "version": "==12.0.0"
+            "version": "==13.0.0"
         },
         "markdown": {
             "hashes": [
@@ -375,6 +376,15 @@
                 "sha256:fe0644d9ab041506b62782e92b06b8c68cca799e1a9636ec398675459e031405"
             ],
             "version": "==0.2.8"
+        },
+        "pystray": {
+            "hashes": [
+                "sha256:06b5bba69261f335d276b30cb0d1fba6a856fba34d2541567344b3030913f570",
+                "sha256:250d71db9381ffbdc9451cd8164e4cf04c92bfc8f48e7513795b3b1e26358424",
+                "sha256:f2c23a4dc9b8c183046f4f19e6de710361024b6616fcad49d8de669e8d3d4204"
+            ],
+            "index": "pypi",
+            "version": "==0.19.2"
         },
         "requests": {
             "hashes": [
