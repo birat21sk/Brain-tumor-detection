@@ -1,22 +1,7 @@
-from tkinter import Tk
+def place_center(self,win_width,win_height):
+    screen_width = self.winfo_screenwidth()
+    screen_height = self.winfo_screenheight()
+    x_cord = (screen_width/2)-(win_width/2)
+    y_cord = (screen_height/2)-(win_height/2)
 
-class Iconified(Tk):    
-    def __init__(self):
-        Tk.__init__(self)
-        self.attributes('-alpha', 0.0)
-
-    
-
-# iconifiedme = NewRoot()
-# iconifiedme.lower()
-# iconifiedme.iconify()
-# iconifiedme.title('Spam 2.0')
-
-
-
-class Window():
-    def __init__(self,root):
-        root.overrideredirect(True) #Hide windows title bar
-        root.geometry("750x531+150+150")
-        root.configure(bg = "#ffffff")
-        root.resizable(False, False)
+    return x_cord, y_cord
