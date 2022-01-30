@@ -1,9 +1,7 @@
 from ctypes import windll
 from pathlib import Path
-import tkinter as tk
 from tkinter import (
-    Tk, 
-    ttk,
+    Tk,  
     Canvas,
     Entry,
     Label,
@@ -14,12 +12,17 @@ from tkinter import (
 )
 from PIL import Image, ImageTk
 
+from pystray import MenuItem as item, Menu
+import pystray as pys
+
 from exception import FileTypeException
 # from prediction import predict_tumor
 from preprocess import is_jpg, preprocess
 from splash_screen import SplashScreen
 from _global import * 
 from _config import place_center
+
+
 
 WIN_WIDTH=750
 WIN_HEIGHT=531
@@ -39,7 +42,8 @@ class TumorAppication(Tk):
         self.resizable(False, False)
         self.overrideredirect(True) #hides title bar
         self.bind("<Map>", self.canvas_mapped)
-        self.after(10, lambda: self.set_taskbar(self))
+        self.after(10, lambda: self.set_taskbar(self)) 
+        self.protocol('WM_DELETE_WINDOW', self.hide_window)
         self.min = 0
 
     def set_taskbar(self,master): 
@@ -51,6 +55,35 @@ class TumorAppication(Tk):
         # re-assert the new window style
         master.wm_withdraw()
         master.after(10, lambda: master.wm_deiconify())
+
+    #System tray icon
+    def set_tray(self):
+        icon=Image.open("./icon.ico")
+        SEPARATOR = item('- - - - - - - -', None)
+        menu=(item('About Cilios', self.show_about),item(SEPARATOR, None),item('Show', self.show_window),item('Exit', self.quit_window))
+        icon=pys.Icon("cilios", icon, "Cilios", menu)
+        icon.run()
+
+    #Quit the window
+    def quit_window(self,icon, item):
+        icon.stop()
+        self.destroy()
+
+    # Function to show the window again
+    def show_window(self,icon, item):
+        icon.stop()
+        self.after(0,self.deiconify())
+
+    def show_about(self):
+        mb.showinfo("About","Cilios is a detection system for brain tumor in MRI images.")
+
+    # Hide the window and show on the system taskbar
+    def hide_window(self):
+        self.withdraw()
+        self.set_tray()
+        
+    def relative_to_assets(self,path: str) -> Path:
+        return ASSETS_PATH / Path(path)
 
     def canvas_mapped(self,e): 
             self.overrideredirect(True)
@@ -217,7 +250,8 @@ class TumorAppication(Tk):
             highlightthickness=0,
             bg="#4f9e9b",
             activebackground='#4d9996',
-            command=self.destroy,
+            # command=self.destroy,
+            command=self.hide_window,
             relief="flat",
             cursor="hand2"
         )
@@ -282,7 +316,6 @@ class TumorAppication(Tk):
         self.browse_btn.bind("<1>", self.get_image)
         #===============Browse Button===============#
 
-
         #===============Detect Button===============#
         self.detect_btn_img = PhotoImage(file=self.relative_to_assets("button_detect.png"))
         self.detect_btn = Label(
@@ -336,8 +369,7 @@ class TumorAppication(Tk):
             width=93.0,
             height=36.36
         ) 
-        self.reset_btn.bind("<1>", self.reset_screen)
-        
+        self.reset_btn.bind("<1>", self.reset_screen)        
         #===============Reset Button===============#
         #====================Input Block====================#
 
@@ -375,11 +407,6 @@ class TumorAppication(Tk):
         self.input_block()
         self.result_block()        
 
-
-    def relative_to_assets(self,path: str) -> Path:
-        return ASSETS_PATH / Path(path)
-     
-
 # def main():
 #     splash.destroy()
 #     app = TumorAppication()
@@ -390,7 +417,7 @@ class TumorAppication(Tk):
 #     splash = SplashScreen()
 #     splash.after(3000, main)
 #     splash.mainloop()
-    
 app = TumorAppication()
 app.create_ui()
+
 app.mainloop()
