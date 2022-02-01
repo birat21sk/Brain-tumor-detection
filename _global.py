@@ -3,3 +3,8 @@ from pathlib import Path
 ROOT_PATH = Path(__file__).parent
 ASSETS_PATH = ROOT_PATH / Path("./assets")
 END = 'end'
+GWL_EXSTYLE = -20
+WIN_HEIGHT=531 
+WIN_WIDTH=750
+WS_EX_APPWINDOW = 0x00040000
+WS_EX_TOOLWINDOW = 0x00000080
