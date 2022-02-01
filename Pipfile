@@ -10,6 +10,7 @@ keras = "*"
 tensorflow = "*"
 opencv-python = "*"
 pystray = "*"
+matplotlib = "*"
 
 [dev-packages]
 
