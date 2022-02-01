@@ -19,17 +19,9 @@ from exception import FileTypeException
 # from prediction import predict_tumor
 from preprocess import is_jpg, preprocess
 from splash_screen import SplashScreen
+from threshold import threshold
 from _global import * 
 from _config import place_center
-
-
-
-WIN_WIDTH=750
-WIN_HEIGHT=531
-#for taskbar integration
-GWL_EXSTYLE = -20
-WS_EX_APPWINDOW = 0x00040000
-WS_EX_TOOLWINDOW = 0x00000080
 
 class TumorAppication(Tk):
     def __init__(self):
@@ -100,8 +92,10 @@ class TumorAppication(Tk):
     def move_app(self,e): 
         self.geometry(f'+{e.x_root - 672}+{e.y_root - 20}')
 
-    def display_image(self,image):
+    def display_image(self,image_path):
         #========== Update UI ==========#
+        threshold_img = threshold(image_path)
+        image = Image.fromarray(threshold_img)
         image = image.resize((284,284))
         img_tk = ImageTk.PhotoImage(image)  
         self.show_result_img=Label(self.canvas,image = img_tk,bd=0)
@@ -145,7 +139,7 @@ class TumorAppication(Tk):
                     self.canvas.itemconfig(self.pred_result, text="Tumor not detected")
                     self.canvas.itemconfig(self.pred_result_summary, text="Tumor was Not detected in the MRI image with with "+str((self.result*100))+"% confidence")
                 
-                self.display_image(self.input_img)
+                self.display_image(self.input_img_path)
             else:
                 raise FileTypeException
         
@@ -172,7 +166,6 @@ class TumorAppication(Tk):
             if self.img_is_jpg:
                 self.path_entry.delete(0, END)
                 self.path_entry.insert(0, self.input_img_path) 
-                self.loading_image =  Image.open(self.relative_to_assets('image_1.png'))
                 self.input_img = Image.open(self.input_img_path)
                 self.resized_input_img = self.input_img.resize((208,208))
                 self.input_image_tk = ImageTk.PhotoImage(self.resized_input_img)                 
