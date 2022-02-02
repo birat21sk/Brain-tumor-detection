@@ -16,10 +16,10 @@ from pystray import MenuItem as item, Menu
 import pystray as pys
 
 from exception import FileTypeException
-# from prediction import predict_tumor
+from prediction import predict_tumor
 from preprocess import is_jpg, preprocess
 from splash_screen import SplashScreen
-from threshold import threshold
+from threshold import image_segmentation
 from _global import * 
 from _config import place_center
 
@@ -78,10 +78,10 @@ class TumorAppication(Tk):
         return ASSETS_PATH / Path(path)
 
     def canvas_mapped(self,e): 
-            self.overrideredirect(True)
-            if self.min == 1:
-                self.set_taskbar(self)
-                self.min = 0
+        self.overrideredirect(True)
+        if self.min == 1:
+            self.set_taskbar(self)
+            self.min = 0
                 
     def minimize(self):
         self.state('withdrawn')
@@ -94,7 +94,7 @@ class TumorAppication(Tk):
 
     def display_image(self,image_path):
         #========== Update UI ==========#
-        threshold_img = threshold(image_path)
+        threshold_img = image_segmentation(image_path)
         image = Image.fromarray(threshold_img)
         image = image.resize((284,284))
         img_tk = ImageTk.PhotoImage(image)  
@@ -128,16 +128,15 @@ class TumorAppication(Tk):
             self.img_is_jpg = is_jpg(self.input_img_path)            
             if self.img_is_jpg:
                 self.img_to_pred = preprocess(self.input_img_path)
-                # self.result = predict_tumor(self.img_to_pred)
-                # self.result = self.result.flatten()
-                # self.result = round(self.result[0],4)
-                self.result = 0.99985
-                if self.result > 0.5:
+                self.result = predict_tumor(self.img_to_pred)
+                self.result = self.result.flatten()
+                percentage = round(self.result[0]*100,2)
+                if self.result[0] > 0.5:
                     self.canvas.itemconfig(self.pred_result, text="Tumor detected ")
-                    self.canvas.itemconfig(self.pred_result_summary, text="Tumor was detected in the MRI image with with "+str((self.result*100))+"% confidence")
-                elif self.result < 0.5:
+                    self.canvas.itemconfig(self.pred_result_summary, text=f'Tumor was DETECTED in the MRI image with {percentage}% confidence.')
+                elif self.result[0] < 0.5:
                     self.canvas.itemconfig(self.pred_result, text="Tumor not detected")
-                    self.canvas.itemconfig(self.pred_result_summary, text="Tumor was Not detected in the MRI image with with "+str((self.result*100))+"% confidence")
+                    self.canvas.itemconfig(self.pred_result_summary, text=f'Tumor was NOT DETECTED in the MRI image with {100-percentage}% confidence.')
                 
                 self.display_image(self.input_img_path)
             else:
@@ -161,6 +160,7 @@ class TumorAppication(Tk):
 
     def get_image(self,event): 
         try:
+            self.reset_screen(event)
             self.input_img_path = filedialog.askopenfilename()
             self.img_is_jpg = is_jpg(self.input_img_path)
             if self.img_is_jpg:
@@ -400,17 +400,13 @@ class TumorAppication(Tk):
         self.input_block()
         self.result_block()        
 
-# def main():
-#     splash.destroy()
-#     app = TumorAppication()
-#     app.create_ui()
-#     app.mainloop()
+def main():
+    splash.destroy()
+    app = TumorAppication()
+    app.create_ui()
+    app.mainloop()
 
-# if __name__ == '__main__': 
-#     splash = SplashScreen()
-#     splash.after(3000, main)
-#     splash.mainloop()
-app = TumorAppication()
-app.create_ui()
-
-app.mainloop()
+if __name__ == '__main__': 
+    splash = SplashScreen()
+    splash.after(3000, main)
+    splash.mainloop() 
