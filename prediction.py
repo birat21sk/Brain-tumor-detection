@@ -1,8 +1,6 @@
-from keras.models import load_model
+import tensorflow as tf
 
-pred_model = load_model("./model/TumorModel10Epochs.h5")
-
+pred_model = tf.keras.models.load_model("./model/TumorModel10Epochs.h5")
 def predict_tumor(image):
     result = pred_model.predict(image)
-    # result = (pred_model.predict(image) > 0.5).astype("int32")
     return result
