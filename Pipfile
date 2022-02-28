@@ -11,6 +11,7 @@ tensorflow = "*"
 opencv-python = "*"
 pystray = "*"
 matplotlib = "*"
+setuptools = "==60.6.0"
 
 [dev-packages]
 
