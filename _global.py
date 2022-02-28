@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT_PATH = Path(__file__).parent
 ASSETS_PATH = ROOT_PATH / Path("./assets")
+DEBUG=False
 END = 'end'
 GWL_EXSTYLE = -20
 WIN_HEIGHT=531 
